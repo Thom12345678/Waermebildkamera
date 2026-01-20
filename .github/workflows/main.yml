@@ -1,0 +1,39 @@
+name: Build Präsentation (PPTX)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "generate_waermebild_presentation.py"
+      - "requirements.txt"
+      - ".github/workflows/build-pptx.yml"
+      - "README.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate PPTX
+        run: |
+          python generate_waermebild_presentation.py --author "Thom12345678" --date "$(date +'%d.%m.%Y')" --output "presentations/Waermebildkamera_6min_Praesentation.pptx"
+
+      - name: Commit generated PPTX
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "presentations/Waermebildkamera_6min_Praesentation.pptx"
+          message: "chore: generate Wärmebildkamera Präsentation"
+          author_name: github-actions
+          author_email: actions@github.com
